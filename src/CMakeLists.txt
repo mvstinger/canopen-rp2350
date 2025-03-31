@@ -1,5 +1,5 @@
 #******************************************************************************
-#   Copyright 2020 Embedded Office GmbH & Co. KG
+#   Copyright 2025 Michael Stinger
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
 #******************************************************************************
 
 #---
-# define the canopen stack library
+# define the canopen-rp2350 library
 #
-add_library(canopen-stack)
+add_library(canopen-rp2350)
 
 #---
 # define interface
 #
-target_include_directories(canopen-stack
+target_include_directories(canopen-rp2350
   PUBLIC
     config
     core
@@ -36,7 +36,7 @@ target_include_directories(canopen-stack
 #---
 # specify the implementation files
 #
-target_sources(canopen-stack
+target_sources(canopen-rp2350
   PRIVATE
     # config interface
     config/callbacks.c
@@ -87,3 +87,10 @@ target_sources(canopen-stack
     # - CiA305
     service/cia305/co_lss.c
 )
+
+
+#---
+# Add pico-specific commands/outputs
+# 
+pico_enable_stdio_usb(canopen-rp2350 1)
+pico_enable_stdio_uart(canopen-rp2350 0)
