@@ -77,7 +77,8 @@ static void DrvTimerStart(void)
 
 static uint8_t DrvTimerUpdate(void)
 {
-    return (timer_fired_) ? 1u : 0u;
+    // return (timer_fired_) ? 1u : 0u;
+    return 1u;
 }
 
 static uint32_t DrvTimerDelay(void)
