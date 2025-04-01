@@ -75,11 +75,11 @@ include(FetchContent)
 #   pico-MCP2515
 message(STATUS "Fetching pico-mcp2515")
 FetchContent_Declare(
-    pico_mcp2515
+    pico-mcp2515
     GIT_REPOSITORY  https://github.com/adamczykpiotr/pico-mcp2515.git
     GIT_TAG         4506dd0659b37b35eaf411de2d93669da471f6c4)
 #   Wait for fetched content
-FetchContent_MakeAvailable(pico_mcp2515)
+FetchContent_MakeAvailable(pico-mcp2515)
 
 #---
 # main targets built by this project

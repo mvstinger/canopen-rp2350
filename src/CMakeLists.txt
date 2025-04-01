@@ -17,12 +17,12 @@
 #---
 # define the canopen-rp2350 library
 #
-add_library(canopen-rp2350)
+add_library(${PROJECT_NAME})
 
 #---
 # define interface
 #
-target_include_directories(canopen-rp2350
+target_include_directories(${PROJECT_NAME}
   PUBLIC
     config
     core
@@ -32,13 +32,13 @@ target_include_directories(canopen-rp2350
     object/cia301
     service/cia301
     service/cia305
-    ${pico_mcp2515_SOURCE_DIR}/include
-    ${PICO_SDK_DIR}/include)
+    ${PICO_SDK_DIR}/include
+    ${pico-mcp2515_SOURCE_DIR}/include)
 
 #---
 # specify the implementation files
 #
-target_sources(canopen-rp2350
+target_sources(${PROJECT_NAME}
   PRIVATE
     # config interface
     config/callbacks.c
@@ -96,10 +96,10 @@ target_sources(canopen-rp2350
     service/cia305/co_lss.c
 
     # MCP2515
-    ${pico_mcp2515_SOURCE_DIR}/include/mcp2515/mcp2515.cpp
+    ${pico-mcp2515_SOURCE_DIR}/include/mcp2515/mcp2515.cpp
 )
 
-target_link_libraries(canopen-rp2350
+target_link_libraries(${PROJECT_NAME}
   PUBLIC
     pico_stdlib
     pico_flash
@@ -110,5 +110,5 @@ target_link_libraries(canopen-rp2350
 #---
 # Add pico-specific commands/outputs
 # 
-pico_enable_stdio_usb(canopen-rp2350 1)
-pico_enable_stdio_uart(canopen-rp2350 0)
+pico_enable_stdio_usb(${PROJECT_NAME} 1)
+pico_enable_stdio_uart(${PROJECT_NAME} 0)
