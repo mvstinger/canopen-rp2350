@@ -25,7 +25,9 @@
 * PRIVATE DEFINES
 ******************************************************************************/
 
-/* TODO: place here your timer register definitions */
+static uint32_t timer_us_;
+static alarm_id_t alarm_id_;
+static volatile bool timer_fired_;
 
 /******************************************************************************
 * PRIVATE FUNCTIONS

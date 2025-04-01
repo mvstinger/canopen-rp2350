@@ -37,10 +37,6 @@ extern "C" {
 
 extern const CO_IF_TIMER_DRV RP2350AlarmTimerDriver;
 
-uint32_t timer_us_;
-alarm_id_t alarm_id_;
-static volatile bool timer_fired_;
-
 #ifdef __cplusplus               /* for compatibility with C++ environments  */
 }
 #endif

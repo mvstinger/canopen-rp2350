@@ -28,9 +28,7 @@
 * PRIVATE DEFINES
 ******************************************************************************/
 
-/* TODO: place here your timer register definitions */
-
-flash_io_args params;
+static flash_io_args params_;
 
 /******************************************************************************
 * PRIVATE FUNCTIONS
@@ -47,9 +45,6 @@ void write_flash_cb_(void* /*unused*/);
 * PUBLIC VARIABLE
 ******************************************************************************/
 
-/* TODO: rename the variable to match the naming convention:
- *   <device>NvmDriver
- */
 const CO_IF_NVM_DRV RP2350FlashNvmDriver = {
     DrvNvmInit,
     DrvNvmRead,
@@ -62,23 +57,23 @@ const CO_IF_NVM_DRV RP2350FlashNvmDriver = {
 
 void read_flash_cb_(void* /*unused*/) {
     // Check if intent is to read more than possible to flash
-    if ( params.size > FLASH_MAX_SIZE ) { return; }
+    if ( params_.size > FLASH_MAX_SIZE ) { return; }
     // Read flash
-    for (uint32_t idx = 0; idx < params.size; idx++) {
-        params.buffer[idx] = (const uint8_t)(FLASH_ORIGIN + params.start + idx);
+    for (uint32_t idx = 0; idx < params_.size; idx++) {
+        params_.buffer[idx] = (const uint8_t)(FLASH_ORIGIN + params_.start + idx);
     }
-    params.response = params.size;
+    params_.response = params_.size;
 };
 
 void write_flash_cb_(void* /*unused*/) {
     // Check if intent is to write more than possible to flash
-    if ( params.size > FLASH_MAX_SIZE ) { return; }
+    if ( params_.size > FLASH_MAX_SIZE ) { return; }
     // Erase then write flash
-    flash_range_erase(FLASH_ORIGIN + params.start, params.size);
-    flash_range_program(FLASH_ORIGIN + params.start,
-                        params.buffer,
-                        params.size);
-    params.response = params.size;
+    flash_range_erase(FLASH_ORIGIN + params_.start, params_.size);
+    flash_range_program(FLASH_ORIGIN + params_.start,
+                        params_.buffer,
+                        params_.size);
+    params_.response = params_.size;
 };
 
 
@@ -90,27 +85,27 @@ static void DrvNvmInit(void) {
 }
 
 static uint32_t DrvNvmRead(uint32_t start, uint8_t *buffer, uint32_t size) {
-    params.start = start;
-    params.buffer = buffer;
-    params.size = size;
-    params.response = 0u;
+    params_.start = start;
+    params_.buffer = buffer;
+    params_.size = size;
+    params_.response = 0u;
     flash_safe_execute(
         write_flash_cb_,
         NULL,
         FLASH_TIMEOUT_MS);
     
-    return params.response;
+    return params_.response;
 }
 
 static uint32_t DrvNvmWrite(uint32_t start, uint8_t *buffer, uint32_t size) {
-    params.start = start;
-    params.buffer = buffer;
-    params.size = size;
-    params.response = 0u;
+    params_.start = start;
+    params_.buffer = buffer;
+    params_.size = size;
+    params_.response = 0u;
     flash_safe_execute(
         write_flash_cb_,
         NULL,
         FLASH_TIMEOUT_MS);
 
-    return params.response;
+    return params_.response;
 }

@@ -43,10 +43,10 @@ typedef struct {
 } flash_io_args;
 
 #define FLASH_TIMEOUT_MS (unsigned long int)1000
-// Set a flash I/O origin at 256kB after the start of flash
+// Set a flash I/O origin at 3 MB after the start of flash
 //  (Must be multiple of 4 kB)
 //  Raspberry Pi Pico2 has 4 MB of flash
-#define FLASH_ORIGIN (XIP_BASE + (256*1024))
+#define FLASH_ORIGIN (XIP_BASE + (3*1024*1024))
 #define FLASH_MAX_SIZE ((4*1024*1024) - FLASH_ORIGIN)
 
 #ifdef __cplusplus               /* for compatibility with C++ environments  */
