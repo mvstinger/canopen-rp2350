@@ -77,8 +77,7 @@ static void DrvTimerStart(void)
 
 static uint8_t DrvTimerUpdate(void)
 {
-    // return (timer_fired_) ? 1u : 0u;
-    return 1u;
+    return (timer_fired_) ? 1u : 0u;
 }
 
 static uint32_t DrvTimerDelay(void)
@@ -92,7 +91,6 @@ static void DrvTimerReload(uint32_t reload)
     cancel_alarm(alarm_id_);
     alarm_id_ = 0;
     timer_us_ = reload / 1000000;
-    alarm_id_ = add_alarm_in_us(timer_us_, timer_irq_, NULL, true);
 }
 
 static void DrvTimerStop(void)
