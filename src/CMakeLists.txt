@@ -26,12 +26,14 @@ target_include_directories(canopen-rp2350
   PUBLIC
     config
     core
+    driver
     hal
     object/basic
     object/cia301
     service/cia301
     service/cia305
-)
+    ${pico_mcp2515_SOURCE_DIR}/include
+    ${PICO_SDK_DIR}/include)
 
 #---
 # specify the implementation files
@@ -48,6 +50,12 @@ target_sources(canopen-rp2350
     core/co_obj.c
     core/co_tmr.c
     core/co_ver.c
+
+    # rp2350/mcp2515 driver
+    driver/rp2350/drv_can_mcp2515.cpp
+    driver/rp2350/drv_nvm_flash.c
+    driver/rp2350/drv_timer_alarm.c
+
     # hardware abstraction
     hal/co_if.c
     hal/co_if_can.c
@@ -86,6 +94,16 @@ target_sources(canopen-rp2350
     service/cia301/co_sync.c
     # - CiA305
     service/cia305/co_lss.c
+
+    # MCP2515
+    ${pico_mcp2515_SOURCE_DIR}/include/mcp2515/mcp2515.cpp
+)
+
+target_link_libraries(canopen-rp2350
+  PUBLIC
+    pico_stdlib
+    pico_flash
+    hardware_spi
 )
 
 

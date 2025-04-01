@@ -1,3 +1,18 @@
+#******************************************************************************
+#   Copyright 2025 Michael Stinger
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+#******************************************************************************
 
 cmake_policy(SET CMP0057 NEW)
 
@@ -17,23 +32,6 @@ endif()
 # ====================================================================================
 set(PICO_BOARD pico CACHE STRING "Board type")
 
-#******************************************************************************
-#   Copyright 2020 Embedded Office GmbH & Co. KG
-#
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-#******************************************************************************
-
-
 # Pull in SDK (must be before project)
 #   Fetch SDK from github if not locally present
 set(PICO_SDK_PATH /home/mvstinger/sdk/pico/pico-sdk)
@@ -52,18 +50,21 @@ include(pico_sdk_import.cmake)
 # preamble
 #
 cmake_minimum_required(VERSION 3.20)     # buildPresets is introduced in 3.20
+
 project(canopen-rp2350)
-enable_language(C ASM)
+
+enable_language(C CXX ASM)
 enable_testing()
+
 
 #---
 # project wide setup
 #
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 set(CMAKE_C_STANDARD 11)
-# set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Initialize the Pico SDK
 pico_sdk_init()
 

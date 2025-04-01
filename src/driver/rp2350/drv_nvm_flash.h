@@ -14,11 +14,8 @@
    limitations under the License.
 ******************************************************************************/
 
-/* TODO: rename the include protection to match the naming convention: 
- *   CO_NVM_<device>_H_
- */
-#ifndef CO_NVM_DUMMY_H_
-#define CO_NVM_DUMMY_H_
+#ifndef CO_NVM_FLASH_H_
+#define CO_NVM_FLASH_H_
 
 #ifdef __cplusplus               /* for compatibility with C++ environments  */
 extern "C" {
@@ -28,16 +25,29 @@ extern "C" {
 * INCLUDES
 ******************************************************************************/
 
+#include "stdint.h"
+#include "pico/stdlib.h"
 #include "co_if.h"
 
 /******************************************************************************
 * PUBLIC SYMBOLS
 ******************************************************************************/
 
-/* TODO: rename the extern variable declaration to match the naming convention:
- *   <device-name>NvmDriver
- */
-extern const CO_IF_NVM_DRV DummyNvmDriver;
+extern const CO_IF_NVM_DRV FlashNvmDriver;
+
+typedef struct {
+    uint32_t start;
+    uint8_t *buffer;
+    uint32_t size;
+    uint32_t response;
+} flash_io_args;
+
+#define FLASH_TIMEOUT_MS (unsigned long int)1000
+// Set a flash I/O origin at 256kB after the start of flash
+//  (Must be multiple of 4 kB)
+//  Raspberry Pi Pico2 has 4 MB of flash
+#define FLASH_ORIGIN (XIP_BASE + (256*1024))
+#define FLASH_MAX_SIZE ((4*1024*1024) - FLASH_ORIGIN)
 
 #ifdef __cplusplus               /* for compatibility with C++ environments  */
 }

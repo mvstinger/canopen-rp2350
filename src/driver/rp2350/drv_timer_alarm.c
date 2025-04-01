@@ -18,10 +18,8 @@
 * INCLUDES
 ******************************************************************************/
 
-/* TODO: rename the include file name to match the naming convention:
- *   co_timer_<device>.h
- */
-#include "co_timer_dummy.h"
+#include "hardware/timer.h"
+#include "drv_timer_alarm.h"
 
 /******************************************************************************
 * PRIVATE DEFINES
@@ -60,38 +58,47 @@ const CO_IF_TIMER_DRV DummyTimerDriver = {
 * PRIVATE FUNCTIONS
 ******************************************************************************/
 
+int64_t timer_irq_(alarm_id_t /*id*/, void* /*user_data*/) {
+    timer_fired_ = true;
+    return 0;
+}
+
+
 static void DrvTimerInit(uint32_t freq)
 {
-    (void)freq;
-
-    /* TODO: initialize timer, clear counter and keep timer stopped */
+    timer_fired_ = false;
+    alarm_id_ = 0;
+    // NOTE: Assuming frequency provided in Hz
+    timer_us_ = freq / 1000000;
 }
 
 static void DrvTimerStart(void)
 {
-    /* TODO: start hardware timer */
+    alarm_id_ = add_alarm_in_us(timer_us_, timer_irq_, NULL, true);
 }
 
 static uint8_t DrvTimerUpdate(void)
 {
-    /* TODO: return 1 if timer event is elapsed, otherwise 0 */
-    return (0u);
+    return (timer_fired_) ? 1u : 0u;
 }
 
 static uint32_t DrvTimerDelay(void)
 {
-    /* TODO: return current timer counter value */
-    return (0u);
+    return remaining_alarm_time_us(alarm_id_);
 }
 
 static void DrvTimerReload(uint32_t reload)
 {
-    (void)reload;
-
-    /* TODO: reload timer counter value with given reload value */
+    timer_fired_ = false;
+    cancel_alarm(alarm_id_);
+    alarm_id_ = 0;
+    // NOTE: Assuming reload provided in Hz
+    timer_us_ = reload / 1000000;
+    alarm_id_ = add_alarm_in_us(timer_us_, timer_irq_, NULL, true);
 }
 
 static void DrvTimerStop(void)
 {
-    /* TODO: stop timer and clear counter value */
+    cancel_alarm(alarm_id_);
+    alarm_id_ = 0;
 }

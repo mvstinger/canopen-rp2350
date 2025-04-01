@@ -28,16 +28,18 @@ extern "C" {
 * INCLUDES
 ******************************************************************************/
 
+#include "pico/time.h"
 #include "co_if.h"
 
 /******************************************************************************
 * PUBLIC SYMBOLS
 ******************************************************************************/
 
-/* TODO: rename the extern variable declaration to match the naming convention:
- *   <device>TimerDriver
- */
-extern const CO_IF_TIMER_DRV DummyTimerDriver;
+extern const CO_IF_TIMER_DRV AlarmTimerDriver;
+
+uint32_t timer_us_;
+alarm_id_t alarm_id_;
+static volatile bool timer_fired_;
 
 #ifdef __cplusplus               /* for compatibility with C++ environments  */
 }

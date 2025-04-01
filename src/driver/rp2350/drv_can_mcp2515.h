@@ -14,11 +14,8 @@
    limitations under the License.
 ******************************************************************************/
 
-/* TODO: rename the include protection to match the naming convention: 
- *   CO_CAN_<device-name>_H_
- */
-#ifndef CO_CAN_DUMMY_H_
-#define CO_CAN_DUMMY_H_
+#ifndef CO_CAN_MCP2515_H_
+#define CO_CAN_MCP2515_H_
 
 #ifdef __cplusplus               /* for compatibility with C++ environments  */
 extern "C" {
@@ -28,16 +25,17 @@ extern "C" {
 * INCLUDES
 ******************************************************************************/
 
+#include "mcp2515/mcp2515.h"
 #include "co_if.h"
 
 /******************************************************************************
 * PUBLIC SYMBOLS
 ******************************************************************************/
 
-/* TODO: rename the extern variable declaration to match the naming convention:
- *   <device-name>CanDriver
- */
-extern const CO_IF_CAN_DRV DummyCanDriver;
+extern const CO_IF_CAN_DRV MCP2515CanDriver;
+
+MCP2515 can_;
+MCP2515::ERROR ret;
 
 #ifdef __cplusplus               /* for compatibility with C++ environments  */
 }
