@@ -34,9 +34,6 @@ extern "C" {
 
 extern const CO_IF_CAN_DRV RP2350MCP2515CanDriver;
 
-MCP2515 can;
-MCP2515::ERROR ret;
-
 #ifdef __cplusplus               /* for compatibility with C++ environments  */
 }
 #endif
