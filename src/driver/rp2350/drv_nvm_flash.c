@@ -50,7 +50,7 @@ void write_flash_cb_(void* /*unused*/);
 /* TODO: rename the variable to match the naming convention:
  *   <device>NvmDriver
  */
-const CO_IF_NVM_DRV FlashNvmDriver = {
+const CO_IF_NVM_DRV RP2350FlashNvmDriver = {
     DrvNvmInit,
     DrvNvmRead,
     DrvNvmWrite

@@ -42,10 +42,7 @@ static void     DrvTimerStop   (void);
 * PUBLIC VARIABLE
 ******************************************************************************/
 
-/* TODO: rename the variable to match the naming convention:
- *   <device>TimerDriver
- */
-const CO_IF_TIMER_DRV DummyTimerDriver = {
+const CO_IF_TIMER_DRV RP2350AlarmTimerDriver = {
     DrvTimerInit,
     DrvTimerReload,
     DrvTimerDelay,
@@ -68,7 +65,6 @@ static void DrvTimerInit(uint32_t freq)
 {
     timer_fired_ = false;
     alarm_id_ = 0;
-    // NOTE: Assuming frequency provided in Hz
     timer_us_ = freq / 1000000;
 }
 
@@ -92,7 +88,6 @@ static void DrvTimerReload(uint32_t reload)
     timer_fired_ = false;
     cancel_alarm(alarm_id_);
     alarm_id_ = 0;
-    // NOTE: Assuming reload provided in Hz
     timer_us_ = reload / 1000000;
     alarm_id_ = add_alarm_in_us(timer_us_, timer_irq_, NULL, true);
 }

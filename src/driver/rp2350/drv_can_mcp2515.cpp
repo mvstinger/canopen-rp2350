@@ -43,10 +43,7 @@ static void    DrvCanClose  (void);
 * PUBLIC VARIABLE
 ******************************************************************************/
 
-/* TODO: rename the variable to match the naming convention:
- *   <device>CanDriver
- */
-const CO_IF_CAN_DRV DummyCanDriver = {
+const CO_IF_CAN_DRV RP2350MCP2515CanDriver = {
     DrvCanInit,
     DrvCanEnable,
     DrvCanRead,
@@ -61,12 +58,12 @@ const CO_IF_CAN_DRV DummyCanDriver = {
 
 static void DrvCanInit(void) {
     /* TODO: initialize the CAN controller (don't enable communication) */
-    can_ = MCP2515(spi0,
+    can = MCP2515(spi0,
                    20,    // CS pin
                    21,    // TX (MOSI) pin
                    19,    // RX (MISO) pin
                    16);   // SCK pin
-    ret = can_.reset();
+    ret = can.reset();
     if (ret != MCP2515::ERROR_OK) {
         // Repeat error message
         while (true) {
@@ -131,7 +128,7 @@ static void DrvCanEnable(uint32_t baudrate) {
         default:
             rate = CAN_1000KBPS;
             break;
-    ret = can_.setBitrate(rate, MCP_16MHZ);
+    ret = can.setBitrate(rate, MCP_16MHZ);
     if (ret != MCP2515::ERROR_OK) {
         // Repeat error message
         while (true) {
@@ -139,7 +136,7 @@ static void DrvCanEnable(uint32_t baudrate) {
             sleep_ms(1000);
         };
     }
-    ret = can_.setNormalMode();
+    ret = can.setNormalMode();
     if (ret != MCP2515::ERROR_OK) {
         // Repeat error message
         while (true) {}
@@ -156,7 +153,7 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
     for (uint8_t idx=0; idx<frm->DLC; idx++) {
         outgoing.data[idx] = frm->Data[idx];
     }
-    ret = can_.sendMessage(&outgoing);
+    ret = can.sendMessage(&outgoing);
     if (ret != MCP2515::ERROR_OK) {
         printf(" cc  CAN bus sendMessage failed with code %i\n", ret);
         return (-1);
@@ -166,7 +163,7 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
 
 static int16_t DrvCanRead (CO_IF_FRM *frm) {
     struct can_frame incoming;
-    ret = can_.readMessage(&incoming);
+    ret = can.readMessage(&incoming);
     if (ret != MCP2515::ERROR_OK) {
         printf(" cc  CAN bus readMessage failed with code %i\n", ret);
         return (-1);
@@ -175,7 +172,7 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
 };
 
 static void DrvCanReset(void) {
-    can_.reset();
+    can.reset();
 };
 
 static void DrvCanClose(void) {

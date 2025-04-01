@@ -35,7 +35,7 @@ extern "C" {
 * PUBLIC SYMBOLS
 ******************************************************************************/
 
-extern const CO_IF_TIMER_DRV AlarmTimerDriver;
+extern const CO_IF_TIMER_DRV RP2350AlarmTimerDriver;
 
 uint32_t timer_us_;
 alarm_id_t alarm_id_;

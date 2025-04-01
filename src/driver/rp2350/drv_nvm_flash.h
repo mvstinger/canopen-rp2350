@@ -33,7 +33,7 @@ extern "C" {
 * PUBLIC SYMBOLS
 ******************************************************************************/
 
-extern const CO_IF_NVM_DRV FlashNvmDriver;
+extern const CO_IF_NVM_DRV RP2350FlashNvmDriver;
 
 typedef struct {
     uint32_t start;
