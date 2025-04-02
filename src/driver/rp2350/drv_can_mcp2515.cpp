@@ -174,7 +174,6 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
 };
 
 static int16_t DrvCanRead (CO_IF_FRM *frm) {
-    printf("[ CAN    ]      Reading CAN bus\n");
     uint8_t irq = can_.getInterrupts();
     struct can_frame incoming;
     // Check if there is a message in the RX buffers
@@ -214,7 +213,6 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             return sizeof(CO_IF_FRM);
         } else if (ret_ == MCP2515::ERROR_NOMSG) {
             // No message received, but no error
-            printf("[ CAN    ]      No message read; Receive: %u\n", can_.checkReceive());
             return 0u;
         } else {
             printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
@@ -222,7 +220,6 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             return (-1);
         }
     }
-    printf("[ CAN    ]      No message read; Receive: %u\n", can_.checkReceive());
     // No message received
     return 0u;
 };
