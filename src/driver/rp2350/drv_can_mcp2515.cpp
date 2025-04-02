@@ -79,7 +79,7 @@ static void DrvCanEnable(uint32_t baudrate) {
     // NOTE: This only accepts the pico-mcp2515 defined rates and fails over to
     //       1Mbps if the rate is not defined.
     printf("[ CAN    ]      Enabling CAN bus\n");
-    printf("                  - Requested baudrate %u\n", baudrate);
+    printf("[ CAN    ]        - Requested baudrate %u\n", baudrate);
     CAN_SPEED rate = CAN_1000KBPS;
     switch (baudrate) {
         case 5000:
@@ -133,7 +133,7 @@ static void DrvCanEnable(uint32_t baudrate) {
             rate = CAN_1000KBPS;
             break;
     }
-    printf("                  - Actual baudrate %u (15 = 1 Mbps)\n", rate);
+    printf("[ CAN    ]        - Actual baudrate %u (15 = 1 Mbps)\n", rate);
     ret_ = can_.setBitrate(rate, MCP_16MHZ);
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
@@ -156,7 +156,7 @@ static void DrvCanEnable(uint32_t baudrate) {
 };
 
 static int16_t DrvCanSend(CO_IF_FRM *frm) {
-    printf("[ CAN    ]    Sending CAN message\n");
+    printf("[ CAN    ]      Sending CAN message\n");
     struct can_frame outgoing;
     outgoing.can_id = frm->Identifier;
     outgoing.can_dlc = frm->DLC;
@@ -165,11 +165,11 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
     }
     ret_ = can_.sendMessage(&outgoing);
     if (ret_ != MCP2515::ERROR_OK) {
-        printf("[ CAN    ]    CAN bus sendMessage failed with code %i\n",
+        printf("[ CAN    ] **** CAN bus sendMessage failed with code %i\n",
                ret_);
         return (-1);
     }
-    printf("[ CAN    ]    Sent CAN message\n");
+    printf("[ CAN    ]      Sent CAN message\n");
     return (0u);
 };
 
