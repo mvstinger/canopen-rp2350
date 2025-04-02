@@ -177,15 +177,37 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
 
 static int16_t DrvCanRead (CO_IF_FRM *frm) {
     printf("[ CAN    ]    Reading CAN message\n");
+    uint8_t irq = can_.getInterrupts();
     struct can_frame incoming;
-    ret_ = can_.readMessage(&incoming);
-    if (ret_ != MCP2515::ERROR_OK) {
-        printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
-               ret_);
-        return (-1);
+    if (irq) {
+        if (irq & MCP2515::CANINTF_RX0IF) {
+            ret_ = can_.readMessage(MCP2515::RXB0, &incoming);
+            if (ret_ == MCP2515::ERROR_OK) {
+                frm->Identifier = incoming.can_id;
+                frm->DLC = incoming.can_dlc;
+                for(uint8_t idx=0; idx < frm->DLC; idx++) {
+                    frm->Data[idx] = incoming.data[idx];
+                }
+                return sizeof(CO_IF_FRM);
+            }
+        } else if (irq & MCP2515::CANINTF_RX1IF) {
+            ret_ = can_.readMessage(MCP2515::RXB1, &incoming);
+            if (ret_ == MCP2515::ERROR_OK) {
+                frm->Identifier = incoming.can_id;
+                frm->DLC = incoming.can_dlc;
+                for(uint8_t idx=0; idx < frm->DLC; idx++) {
+                    frm->Data[idx] = incoming.data[idx];
+                }
+                return sizeof(CO_IF_FRM);
+            }
+        } else {
+            printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
+                ret_);
+            return (-1);
+        }
     }
-    printf("[ CAN    ]    Read CAN message\n");
-    return (sizeof(CO_IF_FRM));
+    // No message received
+    return 0u;
 };
 
 static void DrvCanReset(void) {
