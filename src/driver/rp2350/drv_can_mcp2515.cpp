@@ -206,6 +206,9 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
                     frm->Data[idx] = incoming.data[idx];
                 }
                 return sizeof(CO_IF_FRM);
+            } else if (ret_ == MCP2515::ERROR_NOMSG) {
+                // No message received, but no error
+                return 0u;
             } else {
                 printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
                     ret_);
