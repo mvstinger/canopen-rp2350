@@ -85,7 +85,7 @@ static void DrvTimerStart(void)
             printf("[ CAN    ] **** Failed to start timer id %u\n", alarm_id_);
             duration *= 2;
             printf("[ CAN    ] **** Retrying with initial duration %u us\n",
-                alarm_id_);
+                duration);
             return;
         } else {
             break;
