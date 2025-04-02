@@ -174,48 +174,49 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
 };
 
 static int16_t DrvCanRead (CO_IF_FRM *frm) {
+    printf("[ CAN    ]      Reading CAN bus\n");
     uint8_t irq = can_.getInterrupts();
     struct can_frame incoming;
-    if (irq) {
-        if (irq & MCP2515::CANINTF_RX0IF) {
-            ret_ = can_.readMessage(MCP2515::RXB0, &incoming);
-            if (ret_ == MCP2515::ERROR_OK) {
-                frm->Identifier = incoming.can_id;
-                frm->DLC = incoming.can_dlc;
-                for(uint8_t idx=0; idx < frm->DLC; idx++) {
-                    frm->Data[idx] = incoming.data[idx];
-                }
-                return sizeof(CO_IF_FRM);
+    // Check if there is a message in the RX buffers
+    if (irq & MCP2515::CANINTF_RX0IF) {
+        ret_ = can_.readMessage(MCP2515::RXB0, &incoming);
+        if (ret_ == MCP2515::ERROR_OK) {
+            frm->Identifier = incoming.can_id;
+            frm->DLC = incoming.can_dlc;
+            for(uint8_t idx=0; idx < frm->DLC; idx++) {
+                frm->Data[idx] = incoming.data[idx];
             }
-        } else if (irq & MCP2515::CANINTF_RX1IF) {
-            ret_ = can_.readMessage(MCP2515::RXB1, &incoming);
-            if (ret_ == MCP2515::ERROR_OK) {
-                frm->Identifier = incoming.can_id;
-                frm->DLC = incoming.can_dlc;
-                for(uint8_t idx=0; idx < frm->DLC; idx++) {
-                    frm->Data[idx] = incoming.data[idx];
-                }
-                return sizeof(CO_IF_FRM);
+            return sizeof(CO_IF_FRM);
+        }
+    } else if (irq & MCP2515::CANINTF_RX1IF) {
+        ret_ = can_.readMessage(MCP2515::RXB1, &incoming);
+        if (ret_ == MCP2515::ERROR_OK) {
+            frm->Identifier = incoming.can_id;
+            frm->DLC = incoming.can_dlc;
+            for(uint8_t idx=0; idx < frm->DLC; idx++) {
+                frm->Data[idx] = incoming.data[idx];
             }
+            return sizeof(CO_IF_FRM);
+        }
+    } else {
+        ret_ = can_.readMessage(&incoming);
+        if (ret_ == MCP2515::ERROR_OK) {
+            frm->Identifier = incoming.can_id;
+            frm->DLC = incoming.can_dlc;
+            for(uint8_t idx=0; idx < frm->DLC; idx++) {
+                frm->Data[idx] = incoming.data[idx];
+            }
+            return sizeof(CO_IF_FRM);
+        } else if (ret_ == MCP2515::ERROR_NOMSG) {
+            // No message received, but no error
+            return 0u;
         } else {
-            ret_ = can_.readMessage(&incoming);
-            if (ret_ == MCP2515::ERROR_OK) {
-                frm->Identifier = incoming.can_id;
-                frm->DLC = incoming.can_dlc;
-                for(uint8_t idx=0; idx < frm->DLC; idx++) {
-                    frm->Data[idx] = incoming.data[idx];
-                }
-                return sizeof(CO_IF_FRM);
-            } else if (ret_ == MCP2515::ERROR_NOMSG) {
-                // No message received, but no error
-                return 0u;
-            } else {
-                printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
-                    ret_);
-                return (-1);
-            }
+            printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
+                ret_);
+            return (-1);
         }
     }
+    printf("[ CAN    ]      No message read; Receive: %u\n", can_.checkReceive());
     // No message received
     return 0u;
 };
