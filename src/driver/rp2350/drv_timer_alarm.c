@@ -113,10 +113,10 @@ static uint32_t DrvTimerDelay(void)
 
 static void DrvTimerReload(uint32_t reload)
 {
-    printf("[ CAN    ]      Reloading timer with requested duration %u ticks\n",
+    printf("[ CAN    ]      Reloading timer with (requested) duration %u ticks\n",
         reload);
-    // Duration [us] = # ticks * (1e6 us / 1 s) / frequency [ticks/s]
-    duration_us_ = reload * 1000000u / freq_;
+    // Duration [us] = # ticks / frequency [ticks/s] * (1e6 us / 1 s)
+    duration_us_ = reload / freq_ * 1000000u;
     printf("[ CAN    ]      Reloaded timer with duration %u us\n", duration_us_);
 }
 
