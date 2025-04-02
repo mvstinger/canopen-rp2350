@@ -174,7 +174,6 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
 };
 
 static int16_t DrvCanRead (CO_IF_FRM *frm) {
-    printf("[ CAN    ]    Reading CAN message\n");
     uint8_t irq = can_.getInterrupts();
     struct can_frame incoming;
     if (irq) {
