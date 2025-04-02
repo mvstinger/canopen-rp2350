@@ -80,8 +80,8 @@ static void DrvTimerStart(void)
         alarm_id_ = add_alarm_in_us(timer_us_,
                                     timer_irq_,
                                     NULL,
-                                    true);
-        if (alarm_id_ < 0) {
+                                    false);
+        if (alarm_id_ <= 0) {
             printf("[ CAN    ] **** Failed to start timer id %u\n", alarm_id_);
             duration *= 2;
             printf("[ CAN    ] **** Retrying with initial duration %u us\n",
