@@ -26,7 +26,8 @@
 * PRIVATE DEFINES
 ******************************************************************************/
 
-static uint32_t timer_us_;
+static uint32_t freq_;
+static uint32_t duration_us_;
 static alarm_id_t alarm_id_;
 
 /******************************************************************************
@@ -58,27 +59,28 @@ const CO_IF_TIMER_DRV RP2350AlarmTimerDriver = {
 ******************************************************************************/
 
 int64_t timer_irq_(alarm_id_t /*id*/, void* /*user_data*/) {
-    // Do nothing here- If I had the node, I'd run COTmrService on node_.Tmr
-    //  ...But I don't, so I run COTmrService in the main app loop
-    //TODO: Figure out how to drill into the DrvTimerInit interface...
-    // COTmrService(&node_.Tmr);
-    return timer_us_;
+    DrvTimerUpdate();
+    return 0; // 0: Don't automatically reload the timer
 }
 
 
+// NOTE: Using the "delta" method outlined here with the pico SDK's alarms:
+// https://canopen-stack.org/v4.4/hardware/timer/
+
 static void DrvTimerInit(uint32_t freq)
 {
-    timer_us_ = (freq <= 1000000) ? freq / 1000000 : 1;
-    printf("[ CAN    ]      Creating timer with frequency %u\n", freq);
+    // Alarms use us resolution; Cannot honor alarms faster than 1 MHz
+    freq_ = (freq > 1000000) ? 1000000 : freq;
 
+    printf("[ CAN    ]      Creating timer with frequency %u Hz\n", freq_);
 }
 
 static void DrvTimerStart(void)
 {
     printf("[ CAN    ]      Starting timer\n");
-    uint32_t duration = timer_us_;
+    uint32_t duration = duration_us_;
     while (true) {
-        alarm_id_ = add_alarm_in_us(timer_us_,
+        alarm_id_ = add_alarm_in_us(duration_us_,
                                     timer_irq_,
                                     NULL,
                                     false);
@@ -97,29 +99,25 @@ static void DrvTimerStart(void)
 
 static uint8_t DrvTimerUpdate(void)
 {
-    // This is called via the timer (expired) callback, so always indicates an
-    //  expired timer
-    return 1;
+    // Delta mode- always returns 1u
+    return 1u;
 }
 
 static uint32_t DrvTimerDelay(void)
 {
     printf("[ CAN    ]      Returning timer duration remaining: %u us\n",
         remaining_alarm_time_us(alarm_id_));
-    return remaining_alarm_time_us(alarm_id_);
+    // Duration [ticks] = frequency [ticks/s] * remaining time [us] * (1 s / 1e6 us)
+    return remaining_alarm_time_us(alarm_id_) * freq_ / 1000000u;
 }
 
 static void DrvTimerReload(uint32_t reload)
 {
-    printf("[ CAN    ]      Reloading timer with requested duration %u us\n",
-        reload/1000000);
-    if (!cancel_alarm(alarm_id_)) {
-        printf("[ CAN    ] **** Failed to cancel timer\n");
-        return;
-    };
-    alarm_id_ = 0;
-    timer_us_ = (reload <= 1000000) ? reload / 1000000 : 1;
-    printf("[ CAN    ]      Reloading timer with duration %u us\n", timer_us_);
+    printf("[ CAN    ]      Reloading timer with requested duration %u ticks\n",
+        reload);
+    // Duration [us] = # ticks * (1e6 us / 1 s) / frequency [ticks/s]
+    duration_us_ = reload * 1000000u / freq_;
+    printf("[ CAN    ]      Reloaded timer with duration %u us\n", duration_us_);
 }
 
 static void DrvTimerStop(void)
