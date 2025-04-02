@@ -186,6 +186,8 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             for(uint8_t idx=0; idx < frm->DLC; idx++) {
                 frm->Data[idx] = incoming.data[idx];
             }
+            printf("[ CAN    ]      Read %u bytes from receive buffer 0\n",
+                sizeof(CO_IF_FRM));
             return sizeof(CO_IF_FRM);
         }
     } else if (irq & MCP2515::CANINTF_RX1IF) {
@@ -196,6 +198,8 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             for(uint8_t idx=0; idx < frm->DLC; idx++) {
                 frm->Data[idx] = incoming.data[idx];
             }
+            printf("[ CAN    ]      Read %u bytes from receive buffer 1\n",
+                sizeof(CO_IF_FRM));
             return sizeof(CO_IF_FRM);
         }
     } else {
@@ -206,9 +210,11 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             for(uint8_t idx=0; idx < frm->DLC; idx++) {
                 frm->Data[idx] = incoming.data[idx];
             }
+            printf("[ CAN    ]      Read %u bytes\n", sizeof(CO_IF_FRM));
             return sizeof(CO_IF_FRM);
         } else if (ret_ == MCP2515::ERROR_NOMSG) {
             // No message received, but no error
+            printf("[ CAN    ]      No message read; Receive: %u\n", can_.checkReceive());
             return 0u;
         } else {
             printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
