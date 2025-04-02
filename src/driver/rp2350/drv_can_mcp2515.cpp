@@ -198,9 +198,19 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
                 return sizeof(CO_IF_FRM);
             }
         } else {
-            printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
-                ret_);
-            return (-1);
+            ret_ = can_.readMessage(&incoming);
+            if (ret_ == MCP2515::ERROR_OK) {
+                frm->Identifier = incoming.can_id;
+                frm->DLC = incoming.can_dlc;
+                for(uint8_t idx=0; idx < frm->DLC; idx++) {
+                    frm->Data[idx] = incoming.data[idx];
+                }
+                return sizeof(CO_IF_FRM);
+            } else {
+                printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
+                    ret_);
+                return (-1);
+            }
         }
     }
     // No message received
