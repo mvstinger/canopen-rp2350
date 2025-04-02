@@ -68,8 +68,9 @@ int64_t timer_irq_(alarm_id_t /*id*/, void* /*user_data*/) {
 
 static void DrvTimerInit(uint32_t freq)
 {
+    timer_us_ = (freq <= 1000000) ? freq / 1000000 : 1;
     printf("[ CAN    ]      Creating timer with frequency %u\n", freq);
-    timer_us_ = freq / 1000000;
+
 }
 
 static void DrvTimerStart(void)
@@ -110,14 +111,15 @@ static uint32_t DrvTimerDelay(void)
 
 static void DrvTimerReload(uint32_t reload)
 {
-    printf("[ CAN    ]      Reloading timer with duration: %u us\n",
+    printf("[ CAN    ]      Reloading timer with requested duration %u us\n",
         reload/1000000);
     if (!cancel_alarm(alarm_id_)) {
         printf("[ CAN    ] **** Failed to cancel timer\n");
         return;
     };
     alarm_id_ = 0;
-    timer_us_ = reload / 1000000;
+    timer_us_ = (reload <= 1000000) ? reload / 1000000 : 1;
+    printf("[ CAN    ]      Reloading timer with duration %u us\n", timer_us_);
 }
 
 static void DrvTimerStop(void)
