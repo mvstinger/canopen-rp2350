@@ -18,6 +18,7 @@
 * INCLUDES
 ******************************************************************************/
 
+#include "stdio.h"
 #include "hardware/timer.h"
 #include "drv_timer_alarm.h"
 
@@ -27,7 +28,6 @@
 
 static uint32_t timer_us_;
 static alarm_id_t alarm_id_;
-static volatile bool timer_fired_;
 
 /******************************************************************************
 * PRIVATE FUNCTIONS
@@ -58,36 +58,48 @@ const CO_IF_TIMER_DRV RP2350AlarmTimerDriver = {
 ******************************************************************************/
 
 int64_t timer_irq_(alarm_id_t /*id*/, void* /*user_data*/) {
-    timer_fired_ = true;
-    return 0;
+    // Do nothing here- If I had the node, I'd run COTmrService on node_.Tmr
+    //  ...But I don't, so I run COTmrService in the main app loop
+    //TODO: Figure out how to drill into the DrvTimerInit interface...
+    // COTmrService(&node_.Tmr);
+    return timer_us_;
 }
 
 
 static void DrvTimerInit(uint32_t freq)
 {
-    timer_fired_ = false;
-    alarm_id_ = 0;
+    printf("[ CAN    ]      Creating timer with frequency %u\n", freq);
     timer_us_ = freq / 1000000;
 }
 
 static void DrvTimerStart(void)
 {
-    alarm_id_ = add_alarm_in_us(timer_us_, timer_irq_, NULL, true);
+    printf("[ CAN    ]      Starting timer\n");
+    alarm_id_ = add_alarm_in_us(timer_us_,
+                                timer_irq_,
+                                NULL,
+                                true);
+    printf("[ CAN    ]      Started timer %u\n", alarm_id_);
 }
 
 static uint8_t DrvTimerUpdate(void)
 {
-    return (timer_fired_) ? 1u : 0u;
+    // This is called via the timer (expired) callback, so always indicates an
+    //  expired timer
+    return 1;
 }
 
 static uint32_t DrvTimerDelay(void)
 {
+    printf("[ CAN    ]      Returning timer duration remaining: %u us\n",
+        remaining_alarm_time_us(alarm_id_));
     return remaining_alarm_time_us(alarm_id_);
 }
 
 static void DrvTimerReload(uint32_t reload)
 {
-    timer_fired_ = false;
+    printf("[ CAN    ]      Reloading timer with duration: %u us\n",
+        reload/1000000);
     cancel_alarm(alarm_id_);
     alarm_id_ = 0;
     timer_us_ = reload / 1000000;
@@ -95,6 +107,7 @@ static void DrvTimerReload(uint32_t reload)
 
 static void DrvTimerStop(void)
 {
+    printf("[ CAN    ]      Canceling timer with id: %u\n", alarm_id_);
     cancel_alarm(alarm_id_);
     alarm_id_ = 0;
 }
