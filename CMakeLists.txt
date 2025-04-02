@@ -1,5 +1,5 @@
 #******************************************************************************
-#   Copyright 2025 Michael Stinger
+#   Copyright (c) 2025 Michael Stinger
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 cmake_policy(SET CMP0057 NEW)
 
+
 # == DO NOT EDIT THE FOLLOWING LINES for the Raspberry Pi Pico VS Code Extension to work ==
 if(WIN32)
     set(USERHOME $ENV{USERPROFILE})
@@ -30,6 +31,7 @@ if (EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
 # ====================================================================================
+
 set(PICO_BOARD pico CACHE STRING "Board type")
 
 # Pull in SDK (must be before project)
@@ -46,9 +48,7 @@ set(PICO_PLATFORM "rp2350")
 set(PICO_BOARD "pico2")
 include(pico_sdk_import.cmake)
 
-#---
-# preamble
-#
+
 cmake_minimum_required(VERSION 3.20)     # buildPresets is introduced in 3.20
 
 project(canopen-rp2350)
@@ -57,9 +57,6 @@ enable_language(C CXX ASM)
 enable_testing()
 
 
-#---
-# project wide setup
-#
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
@@ -68,20 +65,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Initialize the Pico SDK
 pico_sdk_init()
 
-#---
-# Find dependencies
-#
-include(FetchContent)
+
+# Secure dependencies
+# include(FetchContent)
+include(cmake/CPM.cmake)
 #   pico-MCP2515
 message(STATUS "Fetching pico-mcp2515")
 FetchContent_Declare(
     pico-mcp2515
     GIT_REPOSITORY  https://github.com/adamczykpiotr/pico-mcp2515.git
     GIT_TAG         4506dd0659b37b35eaf411de2d93669da471f6c4)
+#  canopen-stack
+set(CO_TARGET   "canopen-stack")
+set(CO_PROJECT  "embedded-office/canopen-stack")
+set(CO_VERSION  "4.4.0")
+CPMAddPackage(
+  NAME    canopen-stack
+  URL     https://github.com/${CO_PROJECT}/releases/download/v${CO_VERSION}/${CO_TARGET}-src.zip
+  VERSION ${CO_VERSION}
+)
 #   Wait for fetched content
 FetchContent_MakeAvailable(pico-mcp2515)
 
-#---
-# main targets built by this project
-#
+
+# Target definitions
 add_subdirectory(src)
+# add_subdirectory(tests)

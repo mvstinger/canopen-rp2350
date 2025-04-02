@@ -1,5 +1,5 @@
 #******************************************************************************
-#   Copyright 2025 Michael Stinger
+#   Copyright (c) 2025 Michael Stinger
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,101 +14,29 @@
 #   limitations under the License.
 #******************************************************************************
 
-#---
-# define the canopen-rp2350 library
-#
 add_library(${PROJECT_NAME})
 
-#---
-# define interface
-#
-target_include_directories(${PROJECT_NAME}
-  PUBLIC
-    config
-    core
-    driver
-    hal
-    object/basic
-    object/cia301
-    service/cia301
-    service/cia305
-    ${PICO_SDK_DIR}/include
-    ${pico-mcp2515_SOURCE_DIR}/include)
-
-#---
-# specify the implementation files
-#
 target_sources(${PROJECT_NAME}
   PRIVATE
-    # config interface
-    config/callbacks.c
-
-    # core API
-    core/co_core.c
-    core/co_dict.c
-    core/co_nmt.c
-    core/co_obj.c
-    core/co_tmr.c
-    core/co_ver.c
-
-    # rp2350/mcp2515 driver
     driver/rp2350/drv_can_mcp2515.cpp
     driver/rp2350/drv_nvm_flash.c
     driver/rp2350/drv_timer_alarm.c
+    ${pico-mcp2515_SOURCE_DIR}/include/mcp2515/mcp2515.cpp)
 
-    # hardware abstraction
-    hal/co_if.c
-    hal/co_if_can.c
-    hal/co_if_nvm.c
-    hal/co_if_timer.c
-
-    # object type functions
-    # - basic types
-    object/basic/co_domain.c
-    object/basic/co_string.c
-    object/basic/co_integer8.c
-    object/basic/co_integer16.c
-    object/basic/co_integer32.c
-    # - CiA301 types
-    object/cia301/co_emcy_hist.c
-    object/cia301/co_emcy_id.c
-    object/cia301/co_hb_cons.c
-    object/cia301/co_hb_prod.c
-    object/cia301/co_para_store.c
-    object/cia301/co_para_restore.c
-    object/cia301/co_pdo_event.c
-    object/cia301/co_pdo_id.c
-    object/cia301/co_pdo_map.c
-    object/cia301/co_pdo_num.c
-    object/cia301/co_pdo_type.c
-    object/cia301/co_sdo_id.c
-    object/cia301/co_sync_cycle.c
-    object/cia301/co_sync_id.c
-
-    # network services
-    # - CiA301
-    service/cia301/co_csdo.c
-    service/cia301/co_emcy.c
-    service/cia301/co_pdo.c
-    service/cia301/co_ssdo.c
-    service/cia301/co_sync.c
-    # - CiA305
-    service/cia305/co_lss.c
-
-    # MCP2515
-    ${pico-mcp2515_SOURCE_DIR}/include/mcp2515/mcp2515.cpp
-)
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+    driver/rp2350
+    ${PICO_SDK_DIR}/include
+    ${pico-mcp2515_SOURCE_DIR}/include)
 
 target_link_libraries(${PROJECT_NAME}
-  PUBLIC
+  PRIVATE
     pico_stdlib
     pico_flash
     hardware_spi
-)
+    canopen-stack)
 
 
-#---
-# Add pico-specific commands/outputs
-# 
+# Enable USB printf output, disable UART printf output
 pico_enable_stdio_usb(${PROJECT_NAME} 1)
 pico_enable_stdio_uart(${PROJECT_NAME} 0)
