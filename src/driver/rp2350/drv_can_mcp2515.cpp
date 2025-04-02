@@ -158,7 +158,6 @@ static void DrvCanEnable(uint32_t baudrate) {
 };
 
 static int16_t DrvCanSend(CO_IF_FRM *frm) {
-    printf("[ CAN    ]      Sending CAN message\n");
     struct can_frame outgoing;
     outgoing.can_id = frm->Identifier;
     outgoing.can_dlc = frm->DLC;
@@ -171,7 +170,6 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
                ret_);
         return (-1);
     }
-    printf("[ CAN    ]      Sent CAN message\n");
     return (sizeof(CO_IF_FRM));
 };
 
@@ -227,7 +225,6 @@ static void DrvCanReset(void) {
 
 static void DrvCanClose(void) {
     printf("[ CAN    ]    Removing CAN controller from network\n");
-    printf("[ CAN    ]        <Doing nothing>\n");
     ret_ = can_.setListenOnlyMode();
     if (ret_ != MCP2515::ERROR_OK) {
         printf("[ CAN    ] **** MCP2515 listen-only failed with code %i\n",
