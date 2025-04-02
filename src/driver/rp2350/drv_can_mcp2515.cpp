@@ -59,7 +59,7 @@ const CO_IF_CAN_DRV RP2350MCP2515CanDriver = {
 ******************************************************************************/
 
 static void DrvCanInit(void) {
-    /* TODO: initialize the CAN controller (don't enable communication) */
+    printf("[ CAN    ]      Initializing MCP2515 CAN controller\n");
     can_ = MCP2515(spi0,
                    20,    // CS pin
                    21,    // TX (MOSI) pin
@@ -73,6 +73,7 @@ static void DrvCanInit(void) {
             sleep_ms(1000);
         };
     }
+    printf("[ CAN    ]      MCP2515 CAN controller initialized\n");
 };
 
 static void DrvCanEnable(uint32_t baudrate) {
@@ -143,6 +144,7 @@ static void DrvCanEnable(uint32_t baudrate) {
             sleep_ms(1000);
         };
     }
+    printf("[ CAN    ]        - MCP2515 exiting configuration mode\n");
     ret_ = can_.setNormalMode();
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
@@ -170,7 +172,7 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
         return (-1);
     }
     printf("[ CAN    ]      Sent CAN message\n");
-    return (0u);
+    return (sizeof(CO_IF_FRM));
 };
 
 static int16_t DrvCanRead (CO_IF_FRM *frm) {
@@ -183,7 +185,7 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
         return (-1);
     }
     printf("[ CAN    ]    Read CAN message\n");
-    return (0u);
+    return (sizeof(CO_IF_FRM));
 };
 
 static void DrvCanReset(void) {
@@ -196,12 +198,19 @@ static void DrvCanReset(void) {
             sleep_ms(1000);
         };
     }
+    can_.clearERRIF();
+    can_.clearMERR();
     printf("[ CAN    ]    CAN driver reset\n");
 };
 
 static void DrvCanClose(void) {
     printf("[ CAN    ]    Removing CAN controller from network\n");
-    /* TODO: remove CAN controller from CAN network */
     printf("[ CAN    ]        <Doing nothing>\n");
+    ret_ = can_.setListenOnlyMode();
+    if (ret_ != MCP2515::ERROR_OK) {
+        printf("[ CAN    ] **** MCP2515 listen-only failed with code %i\n",
+            ret_);
+        return;
+    }
     printf("[ CAN    ]    Removed CAN controller from network\n");
 };
