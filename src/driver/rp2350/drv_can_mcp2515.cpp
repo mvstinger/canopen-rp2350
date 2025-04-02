@@ -69,7 +69,7 @@ static void DrvCanInit(void) {
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
         while (true) {
-            printf(" cc  CAN bus reset failed with code %i\n", ret_);
+            printf("[ CAN    ]    CAN bus reset failed with code %i\n", ret_);
             sleep_ms(1000);
         };
     }
@@ -130,19 +130,22 @@ static void DrvCanEnable(uint32_t baudrate) {
         default:
             rate = CAN_1000KBPS;
             break;
+    }
     ret_ = can_.setBitrate(rate, MCP_16MHZ);
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
         while (true) {
-            printf(" cc  CAN bus setBitrate failed with code %i\n", ret_);
+            printf("[ CAN    ]    CAN bus setBitrate failed with code %i\n",
+                   ret_);
             sleep_ms(1000);
         };
     }
     ret_ = can_.setNormalMode();
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
-        while (true) {}
-            printf(" cc  CAN bus setNormalMode failed with code %i\n", ret_);
+        while (true) {
+            printf("[ CAN    ]    CAN bus setNormalMode failed with code %i\n",
+                   ret_);
             sleep_ms(1000);
         };
     }
@@ -157,7 +160,8 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
     }
     ret_ = can_.sendMessage(&outgoing);
     if (ret_ != MCP2515::ERROR_OK) {
-        printf(" cc  CAN bus sendMessage failed with code %i\n", ret_);
+        printf("[ CAN    ]    CAN bus sendMessage failed with code %i\n",
+               ret_);
         return (-1);
     }
     return (0u);
@@ -167,14 +171,22 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
     struct can_frame incoming;
     ret_ = can_.readMessage(&incoming);
     if (ret_ != MCP2515::ERROR_OK) {
-        printf(" cc  CAN bus readMessage failed with code %i\n", ret_);
+        printf("[ CAN    ]    CAN bus readMessage failed with code %i\n",
+               ret_);
         return (-1);
     }
     return (0u);
 };
 
 static void DrvCanReset(void) {
-    can_.reset();
+    ret_ = can_.reset();
+    if (ret_ != MCP2515::ERROR_OK) {
+        // Repeat error message
+        while (true) {
+            printf("[ CAN    ]    CAN bus reset failed with code %i\n", ret_);
+            sleep_ms(1000);
+        };
+    }
 };
 
 static void DrvCanClose(void) {
