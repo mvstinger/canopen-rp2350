@@ -67,7 +67,7 @@ pico_sdk_init()
 
 
 # Secure dependencies
-# include(FetchContent)
+include(FetchContent)
 include(cmake/CPM.cmake)
 #   pico-MCP2515
 message(STATUS "Fetching pico-mcp2515")
