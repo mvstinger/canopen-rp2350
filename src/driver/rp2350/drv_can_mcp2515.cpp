@@ -202,7 +202,7 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
                 frm->Data[idx] = incoming.data[idx];
             }
             printf("[ CAN    ]      Read frame from RX0:\n");
-            printf("[ CAN    ]        id: %u\n", incoming.can_id);
+            printf("[ CAN    ]        id: %x\n", incoming.can_id);
             printf("[ CAN    ]       dlc: %u\n", incoming.can_dlc);
             for(uint8_t idx=0; idx < incoming.can_dlc; idx++) {
                 printf("[ CAN    ]       data[%u]: %u\n", idx, incoming.data[idx]);
@@ -218,7 +218,7 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
                 frm->Data[idx] = incoming.data[idx];
             }
             printf("[ CAN    ]      Read frame from RX0:\n");
-            printf("[ CAN    ]        id: %u\n", incoming.can_id);
+            printf("[ CAN    ]        id: %x\n", incoming.can_id);
             printf("[ CAN    ]       dlc: %u\n", incoming.can_dlc);
             for(uint8_t idx=0; idx < incoming.can_dlc; idx++) {
                 printf("[ CAN    ]       data[%u]: %u\n", idx, incoming.data[idx]);
