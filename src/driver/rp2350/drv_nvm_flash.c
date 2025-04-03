@@ -18,6 +18,7 @@
 * INCLUDES
 ******************************************************************************/
 
+#include "stdio.h"
 #include "stdint.h"
 #include "pico/stdlib.h"
 #include "pico/flash.h"
@@ -57,22 +58,28 @@ const CO_IF_NVM_DRV RP2350FlashNvmDriver = {
 
 void read_flash_cb_(void* /*unused*/) {
     // Check if intent is to read more than possible to flash
+    printf("[ CAN    ]      Attempting to read %d bytes from flash\n", params_.size);
     if ( params_.size > FLASH_MAX_SIZE ) { return; }
+    printf("[ CAN    ]      Reading %d bytes from flash\n", params_.size);
     // Read flash
     for (uint32_t idx = 0; idx < params_.size; idx++) {
         params_.buffer[idx] = (const uint8_t)(FLASH_ORIGIN + params_.start + idx);
     }
+    printf("[ CAN    ]      Read %d bytes from flash\n", params_.size);
     params_.response = params_.size;
 };
 
 void write_flash_cb_(void* /*unused*/) {
     // Check if intent is to write more than possible to flash
+    printf("[ CAN    ]      Attempting to write %d bytes to flash\n", params_.size);
     if ( params_.size > FLASH_MAX_SIZE ) { return; }
+    printf("[ CAN    ]      Writing %d bytes to flash\n", params_.size);
     // Erase then write flash
     flash_range_erase(FLASH_ORIGIN + params_.start, params_.size);
     flash_range_program(FLASH_ORIGIN + params_.start,
                         params_.buffer,
                         params_.size);
+    printf("[ CAN    ]      Wrote %d bytes to flash\n", params_.size);
     params_.response = params_.size;
 };
 
@@ -81,10 +88,16 @@ static void DrvNvmInit(void) {
     // Enable cooperative flash access between cores
     //  NOTE: This must also be called on the other core before accessing flash
     //      or set PICO_FLASH_ASSUME_CORE0_SAFE to 1 in the build flags
+    printf("[ CAN    ]      Setting up flash safe execute\n");
     flash_safe_execute_core_init();
+    printf("[ CAN    ]      Flash safe execute set up\n");
 }
 
 static uint32_t DrvNvmRead(uint32_t start, uint8_t *buffer, uint32_t size) {
+    printf("[ CAN    ]      Reading from flash\n");
+    printf("[ CAN    ]        - Starting at %x\n", start);
+    printf("[ CAN    ]        - Size %d\n", size);
+    printf("[ CAN    ]        - Buffer %x\n", buffer);
     params_.start = start;
     params_.buffer = buffer;
     params_.size = size;
@@ -93,11 +106,19 @@ static uint32_t DrvNvmRead(uint32_t start, uint8_t *buffer, uint32_t size) {
         write_flash_cb_,
         NULL,
         FLASH_TIMEOUT_MS);
-    
+    printf("[ CAN    ]      Read from flash\n");
+    printf("[ CAN    ]        - Starting at %x\n", params_.start);
+    printf("[ CAN    ]        - Size %d\n", params_.size);
+    printf("[ CAN    ]        - Buffer %x\n", params_.buffer);
+    printf("[ CAN    ]        - Response %d\n", params_.response);
     return params_.response;
 }
 
 static uint32_t DrvNvmWrite(uint32_t start, uint8_t *buffer, uint32_t size) {
+    printf("[ CAN    ]      Writing to flash\n");
+    printf("[ CAN    ]        - Starting at %x\n", start);
+    printf("[ CAN    ]        - Size %d\n", size);
+    printf("[ CAN    ]        - Buffer %x\n", buffer);
     params_.start = start;
     params_.buffer = buffer;
     params_.size = size;
@@ -106,6 +127,10 @@ static uint32_t DrvNvmWrite(uint32_t start, uint8_t *buffer, uint32_t size) {
         write_flash_cb_,
         NULL,
         FLASH_TIMEOUT_MS);
-
+    printf("[ CAN    ]      Wrote to flash\n");
+    printf("[ CAN    ]        - Starting at %x\n", params_.start);
+    printf("[ CAN    ]        - Size %d\n", params_.size);
+    printf("[ CAN    ]        - Buffer %x\n", params_.buffer);
+    printf("[ CAN    ]        - Response %d\n", params_.response);
     return params_.response;
 }

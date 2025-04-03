@@ -69,7 +69,7 @@ static void DrvCanInit(void) {
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
         while (true) {
-            printf("[ CAN    ]    CAN bus reset failed with code %i\n", ret_);
+            printf("[ CAN    ]    CAN bus reset failed with code %u\n", ret_);
             sleep_ms(1000);
         };
     }
@@ -139,7 +139,7 @@ static void DrvCanEnable(uint32_t baudrate) {
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
         while (true) {
-            printf("[ CAN    ] **** CAN bus setBitrate failed with code %i\n",
+            printf("[ CAN    ] **** CAN bus setBitrate failed with code %u\n",
                    ret_);
             sleep_ms(1000);
         };
@@ -149,7 +149,7 @@ static void DrvCanEnable(uint32_t baudrate) {
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
         while (true) {
-            printf("[ CAN    ] **** CAN bus setNormalMode failed with code %i\n",
+            printf("[ CAN    ] **** CAN bus setNormalMode failed with code %u\n",
                    ret_);
             sleep_ms(1000);
         };
@@ -166,7 +166,7 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
     }
     ret_ = can_.sendMessage(&outgoing);
     if (ret_ != MCP2515::ERROR_OK) {
-        printf("[ CAN    ] **** CAN bus sendMessage failed with code %i\n",
+        printf("[ CAN    ] **** CAN bus sendMessage failed with code %u\n",
                ret_);
         return (-1);
     }
@@ -210,7 +210,7 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             // No message received, but no error
             return 0u;
         } else {
-            printf("[ CAN    ]    MCP2515 readMessage failed with code %i\n",
+            printf("[ CAN    ]    MCP2515 readMessage failed with code %u\n",
                 ret_);
             return (-1);
         }
@@ -225,7 +225,7 @@ static void DrvCanReset(void) {
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
         while (true) {
-            printf("[ CAN    ]    MCP2515 reset failed with code %i\n", ret_);
+            printf("[ CAN    ]    MCP2515 reset failed with code %u\n", ret_);
             sleep_ms(1000);
         };
     }
@@ -238,7 +238,7 @@ static void DrvCanClose(void) {
     printf("[ CAN    ]    Removing CAN controller from network\n");
     ret_ = can_.setListenOnlyMode();
     if (ret_ != MCP2515::ERROR_OK) {
-        printf("[ CAN    ] **** MCP2515 listen-only failed with code %i\n",
+        printf("[ CAN    ] **** MCP2515 listen-only failed with code %u\n",
             ret_);
         return;
     }
