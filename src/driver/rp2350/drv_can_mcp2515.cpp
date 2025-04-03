@@ -185,12 +185,8 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             for(uint8_t idx=0; idx < frm->DLC; idx++) {
                 frm->Data[idx] = incoming.data[idx];
             }
-            printf("[ CAN    ]      Read frame from RX0:\n");
-            printf("[ CAN    ]        id: %u\n", incoming.can_id);
-            printf("[ CAN    ]       dlc: %u\n", incoming.can_dlc);
-            for(uint8_t idx=0; idx < incoming.can_dlc; idx++) {
-                printf("[ CAN    ]       data[%u]: %u\n", idx, incoming.data[idx]);
-            }
+            printf("[ CAN    ]      Read frame from RX0: %x [%u]\n",
+                frm->Identifier, frm->DLC);
             return sizeof(CO_IF_FRM);
         }
     } else if (irq & MCP2515::CANINTF_RX1IF) {
@@ -201,12 +197,8 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             for(uint8_t idx=0; idx < frm->DLC; idx++) {
                 frm->Data[idx] = incoming.data[idx];
             }
-            printf("[ CAN    ]      Read frame from RX0:\n");
-            printf("[ CAN    ]        id: %x\n", incoming.can_id);
-            printf("[ CAN    ]       dlc: %u\n", incoming.can_dlc);
-            for(uint8_t idx=0; idx < incoming.can_dlc; idx++) {
-                printf("[ CAN    ]       data[%u]: %u\n", idx, incoming.data[idx]);
-            }
+            printf("[ CAN    ]      Read frame from RX1: %x [%u]\n",
+                frm->Identifier, frm->DLC);
             return sizeof(CO_IF_FRM);
         }
     } else {
