@@ -60,7 +60,7 @@ const CO_IF_TIMER_DRV RP2350AlarmTimerDriver = {
 
 int64_t timer_irq_(alarm_id_t /*id*/, void* /*user_data*/) {
     DrvTimerUpdate();
-    return 0; // 0: Don't automatically reload the timer
+    return 0; // 0: Don't automatically restart the timer
 }
 
 
@@ -71,13 +71,10 @@ static void DrvTimerInit(uint32_t freq)
 {
     // Alarms use us resolution; Cannot honor alarms faster than 1 MHz
     freq_ = (freq > 1000000) ? 1000000 : freq;
-
-    printf("[ CAN    ]      Creating timer with frequency %u Hz\n", freq_);
 }
 
 static void DrvTimerStart(void)
 {
-    printf("[ CAN    ]      Starting timer\n");
     uint32_t duration = duration_us_;
     while (true) {
         alarm_id_ = add_alarm_in_us(duration_us_,
@@ -94,7 +91,6 @@ static void DrvTimerStart(void)
             break;
         }
     }
-    printf("[ CAN    ]      Started timer %u\n", alarm_id_);
 }
 
 static uint8_t DrvTimerUpdate(void)
@@ -105,24 +101,18 @@ static uint8_t DrvTimerUpdate(void)
 
 static uint32_t DrvTimerDelay(void)
 {
-    printf("[ CAN    ]      Returning timer duration remaining: %u us\n",
-        remaining_alarm_time_us(alarm_id_));
     // Duration [ticks] = frequency [ticks/s] * remaining time [us] * (1 s / 1e6 us)
     return remaining_alarm_time_us(alarm_id_) * freq_ / 1000000u;
 }
 
 static void DrvTimerReload(uint32_t reload)
 {
-    printf("[ CAN    ]      Reloading timer with (requested) duration %u ticks\n",
-        reload);
     // Duration [us] = # ticks / frequency [ticks/s] * (1e6 us / 1 s)
     duration_us_ = reload / freq_ * 1000000u;
-    printf("[ CAN    ]      Reloaded timer with duration %u us\n", duration_us_);
 }
 
 static void DrvTimerStop(void)
 {
-    printf("[ CAN    ]      Stopping timer with id: %u\n", alarm_id_);
     if (!cancel_alarm(alarm_id_)) {
         printf("[ CAN    ] **** Failed to cancel timer\n");
         return;
