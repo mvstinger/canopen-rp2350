@@ -220,7 +220,7 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
 };
 
 static void DrvCanReset(void) {
-    printf("[ CAN    ]    Reseting CAN driver\n");
+    printf("[ CAN    ]      Reseting CAN driver\n");
     ret_ = can_.reset();
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
@@ -231,7 +231,8 @@ static void DrvCanReset(void) {
     }
     can_.clearERRIF();
     can_.clearMERR();
-    printf("[ CAN    ]    CAN driver reset\n");
+    printf("[ CAN    ]    CAN driver reset...Calling Init\n");
+    DrvCanInit();
 };
 
 static void DrvCanClose(void) {
