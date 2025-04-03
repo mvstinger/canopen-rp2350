@@ -187,7 +187,7 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             }
             printf("[ CAN    ]      Read frame from RX0: %x [%u]\n",
                 frm->Identifier, frm->DLC);
-            return sizeof(CO_IF_FRM);
+            return sizeof(CO_IF_FRM) + frm->DLC;
         }
     } else if (irq & MCP2515::CANINTF_RX1IF) {
         ret_ = can_.readMessage(MCP2515::RXB1, &incoming);
@@ -199,7 +199,7 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             }
             printf("[ CAN    ]      Read frame from RX1: %x [%u]\n",
                 frm->Identifier, frm->DLC);
-            return sizeof(CO_IF_FRM);
+            return sizeof(CO_IF_FRM) + frm->DLC;
         }
     } else {
         ret_ = can_.readMessage(&incoming);
@@ -209,13 +209,9 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             for(uint8_t idx=0; idx < frm->DLC; idx++) {
                 frm->Data[idx] = incoming.data[idx];
             }
-            printf("[ CAN    ]      Read frame from RX0:\n");
-            printf("[ CAN    ]        id: %x\n", incoming.can_id);
-            printf("[ CAN    ]       dlc: %u\n", incoming.can_dlc);
-            for(uint8_t idx=0; idx < incoming.can_dlc; idx++) {
-                printf("[ CAN    ]       data[%u]: %u\n", idx, incoming.data[idx]);
-            }
-            return sizeof(CO_IF_FRM);
+            printf("[ CAN    ]      Read frame: %x [%u]\n",
+                frm->Identifier, frm->DLC);
+            return sizeof(CO_IF_FRM) + frm->DLC;
         } else if (ret_ == MCP2515::ERROR_NOMSG) {
             // No message received, but no error
             return 0u;
