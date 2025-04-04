@@ -28,8 +28,8 @@
 
 static MCP2515::ERROR ret_;
 static MCP2515 can_;
-static uint32_t mask_ = 0x00000000;
-static uint32_t filter_ = 0x00000000;
+static uint32_t mask_ = 0x01111100;
+static uint32_t filter_ = 0x01000000;
 
 /******************************************************************************
 * PRIVATE FUNCTIONS
@@ -158,6 +158,7 @@ static void DrvCanEnable(uint32_t baudrate) {
 
     if (mask_ != 0) {
         printf("[ CAN    ]        Setting MCP2515 mask and filter\n");
+        // Set CAN mask and filter
         ret_ = can_.setFilterMask(MCP2515::MASK0, mask_, false);
         if (ret_ != MCP2515::ERROR_OK) {
             printf("[ CAN    ] **** Failed while setting mask\n");
