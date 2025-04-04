@@ -82,9 +82,10 @@ static void DrvTimerStart(void)
                                     NULL,
                                     false);
         if (alarm_id_ <= 0) {
-            printf("[ CAN    ] **** Failed to start timer id %u\n", alarm_id_);
+            printf("[ CAN    ] ****** Timer: Failed to start timer %u\n",
+                alarm_id_);
             duration *= 2;
-            printf("[ CAN    ] **** Retrying with initial duration %u us\n",
+            printf("[ CAN    ] ******   - Retrying with initial duration %u us\n",
                 duration);
             return;
         } else {
@@ -114,7 +115,8 @@ static void DrvTimerReload(uint32_t reload)
 static void DrvTimerStop(void)
 {
     if (!cancel_alarm(alarm_id_)) {
-        printf("[ CAN    ] **** Failed to cancel timer\n");
+        printf("[ CAN    ] ****** Timer: Failed to cancel alarm %u\n",
+            alarm_id_);
         return;
     };
     alarm_id_ = 0;
