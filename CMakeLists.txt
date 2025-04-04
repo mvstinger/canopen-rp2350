@@ -73,7 +73,7 @@ include(cmake/CPM.cmake)
 message(STATUS "Fetching pico-mcp2515")
 FetchContent_Declare(
     pico-mcp2515
-    GIT_REPOSITORY  https://github.com/adamczykpiotr/pico-mcp2515.git
+    GIT_REPOSITORY  https://github.com/mvstinger/pico-mcp2515.git
     GIT_TAG         4506dd0659b37b35eaf411de2d93669da471f6c4)
 #  canopen-stack
 set(CO_TARGET   "canopen-stack")
