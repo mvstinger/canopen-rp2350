@@ -33,9 +33,10 @@ void CONodeFatalError(void)
 {
     volatile uint8_t debugExit = 0u;
 
-    printf("[ CAN    ] **** Fatal error in CANopen stack.\n");
-
-    for (;debugExit == 0u;);
+    while (true) {
+        printf("[ CAN    ] **** Fatal error in CANopen stack.\n");
+        debugExit = 0u;
+    }
 }
 
 WEAK

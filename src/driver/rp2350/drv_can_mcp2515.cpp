@@ -202,6 +202,8 @@ static int16_t DrvCanSend(CO_IF_FRM *frm) {
                ret_);
         return (-1);
     }
+    printf("[ CAN    ]      Sent frame: %x [%u]\n",
+           outgoing.can_id, outgoing.can_dlc);
     return (sizeof(CO_IF_FRM));
 };
 
