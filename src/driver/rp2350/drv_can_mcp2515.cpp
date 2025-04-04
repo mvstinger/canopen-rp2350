@@ -28,7 +28,8 @@
 
 static MCP2515::ERROR ret_;
 static MCP2515 can_;
-/* TODO: place here your CAN controller register definitions */
+static uint32_t mask_ = 0x00000000;
+static uint32_t filter_ = 0x00000000;
 
 /******************************************************************************
 * PRIVATE FUNCTIONS
@@ -40,6 +41,16 @@ static int16_t DrvCanSend   (CO_IF_FRM *frm);
 static int16_t DrvCanRead   (CO_IF_FRM *frm);
 static void    DrvCanReset  (void);
 static void    DrvCanClose  (void);
+
+MCP2515::ERROR set_mask(uint32_t mask) {
+    mask_ = mask;
+    return MCP2515::ERROR_OK;
+};
+
+MCP2515::ERROR set_filter(uint32_t filter) {
+    filter_ = filter;
+    return MCP2515::ERROR_OK;
+};
 
 /******************************************************************************
 * PUBLIC VARIABLE
@@ -144,7 +155,27 @@ static void DrvCanEnable(uint32_t baudrate) {
             sleep_ms(1000);
         };
     }
-    printf("[ CAN    ]        - MCP2515 exiting configuration mode\n");
+
+    if (mask_ != 0) {
+        printf("[ CAN    ]        Setting MCP2515 mask and filter\n");
+        ret_ = can_.setFilterMask(MCP2515::MASK0, mask_, false);
+        if (ret_ != MCP2515::ERROR_OK) {
+            printf("[ CAN    ] **** Failed while setting mask\n");
+            printf("[ CAN    ] ****   - Code: %u\n", ret_);
+            printf("[ CAN    ] ****   - Mask: %x\n", mask_);
+            return;
+        }
+        ret_ = can_.setFilter(MCP2515::RXF0, filter_, false);
+        if (ret_ != MCP2515::ERROR_OK) {
+            printf("[ CAN    ] **** Failed while setting filter\n");
+            printf("[ CAN    ] ****   - Code: %u\n", ret_);
+            printf("[ CAN    ] ****   - Filter: %x\n", filter_);
+            return;
+        }
+        printf("[ CAN    ]        MCP2515 mask and filter set\n");
+    }    
+    
+    printf("[ CAN    ]        MCP2515 exiting configuration mode\n");
     ret_ = can_.setNormalMode();
     if (ret_ != MCP2515::ERROR_OK) {
         // Repeat error message
@@ -199,7 +230,7 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
             }
             printf("[ CAN    ]      Read frame from RX1: %x [%u]\n",
                 frm->Identifier, frm->DLC);
-            return sizeof(CO_IF_FRM) + frm->DLC;
+            return 4 + frm->DLC;
         }
     } else {
         ret_ = can_.readMessage(&incoming);

@@ -34,6 +34,9 @@ extern "C" {
 
 extern const CO_IF_CAN_DRV RP2350MCP2515CanDriver;
 
+MCP2515::ERROR set_mask(uint32_t mask);
+MCP2515::ERROR set_filter(uint32_t filter);
+
 #ifdef __cplusplus               /* for compatibility with C++ environments  */
 }
 #endif
