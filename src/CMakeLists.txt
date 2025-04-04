@@ -21,6 +21,7 @@ target_sources(${PROJECT_NAME}
     driver/rp2350/drv_can_mcp2515.cpp
     driver/rp2350/drv_nvm_flash.c
     driver/rp2350/drv_timer_alarm.c
+    config/callbacks.c
     ${pico-mcp2515_SOURCE_DIR}/include/mcp2515/mcp2515.cpp)
 
 target_include_directories(${PROJECT_NAME}
