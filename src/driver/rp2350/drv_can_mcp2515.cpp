@@ -19,6 +19,7 @@
 ******************************************************************************/
 
 #include "stdio.h"
+#include "hardware/gpio.h"
 #include "mcp2515/can.h"
 #include "drv_can_mcp2515.h"
 
@@ -252,22 +253,23 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
 };
 
 static void DrvCanReset(void) {
-    // printf("[ CAN    ]      Reseting CAN driver\n");
-    // ret_ = can_.reset();
-    // if (ret_ != MCP2515::ERROR_OK) {
-    //     // Repeat error message
-    //     while (true) {
-    //         printf("[ CAN    ]    MCP2515 reset failed with code %u\n", ret_);
-    //         sleep_ms(1000);
-    //     };
-    // }
-    // can_.clearERRIF();
-    // can_.clearMERR();
-    printf("[ CAN    ]      Reentering configuration mode\n");
-    can_.setConfigMode();
-    printf("[ CAN    ]      Reentered configuration mode\n");
+    // Disable CAN message received interrupts
+    gpio_set_irq_enabled(PIN_21_IRQ, GPIO_IRQ_EDGE_RISE, false);
+
+    printf("[ CAN    ]      Reseting CAN driver\n");
+    ret_ = can_.reset();
+    if (ret_ != MCP2515::ERROR_OK) {
+        // Repeat error message
+        while (true) {
+            printf("[ CAN    ]    MCP2515 reset failed with code %u\n", ret_);
+            sleep_ms(1000);
+        };
+    }
     printf("[ CAN    ]      Calling Init\n");
     DrvCanInit();
+
+    // Re-enable CAN message received interrupts
+    gpio_set_irq_enabled(PIN_21_IRQ, GPIO_IRQ_EDGE_RISE, true);
 };
 
 static void DrvCanClose(void) {
