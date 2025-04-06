@@ -190,6 +190,10 @@ static void DrvCanEnable(uint32_t baudrate) {
             sleep_ms(1000);
         };
     }
+
+    // Re-enable IRQ on MCP2515's IRQ pin (in case disabled in DrvCanReset)
+    gpio_set_irq_enabled(PIN_21_IRQ, GPIO_IRQ_EDGE_FALL, true);
+
     printf("[ CAN    ]      CAN bus enabled\n");
 };
 
@@ -257,22 +261,22 @@ static int16_t DrvCanRead (CO_IF_FRM *frm) {
 
 static void DrvCanReset(void) {
     // Disable CAN message received interrupts
-    gpio_set_irq_enabled(PIN_21_IRQ, GPIO_IRQ_EDGE_RISE, false);
+    // Re-enable MCP2515's CAN message received interrupts in DrvCanEnable
+    gpio_set_irq_enabled(PIN_21_IRQ, GPIO_IRQ_EDGE_FALL, false);
 
-    printf("[ CAN    ]      Reseting CAN driver\n");
-    ret_ = can_.reset();
-    if (ret_ != MCP2515::ERROR_OK) {
-        // Repeat error message
-        while (true) {
-            printf("[ CAN    ]    MCP2515 reset failed with code %u\n", ret_);
-            sleep_ms(1000);
-        };
-    }
+    // printf("[ CAN    ]      Reseting CAN driver\n");
+    // ret_ = can_.reset();
+    // if (ret_ != MCP2515::ERROR_OK) {
+    //     // Repeat error message
+    //     while (true) {
+    //         printf("[ CAN    ]    MCP2515 reset failed with code %u\n", ret_);
+    //         sleep_ms(1000);
+    //     };
+    // }
+    can_.clearInterrupts();
+    can_.clearRXnOVRFlags();
     printf("[ CAN    ]      Calling Init\n");
     DrvCanInit();
-
-    // Re-enable CAN message received interrupts
-    gpio_set_irq_enabled(PIN_21_IRQ, GPIO_IRQ_EDGE_RISE, true);
 };
 
 static void DrvCanClose(void) {
